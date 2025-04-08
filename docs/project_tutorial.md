@@ -1,3 +1,5 @@
+# RAG Tutorial
+
 Okay, let's revise the tutorial for a Computer Science undergraduate audience. We'll add more background on RAG, explain concepts more fundamentally, and connect the steps back to basic principles like embeddings and similarity.
 
 ---
