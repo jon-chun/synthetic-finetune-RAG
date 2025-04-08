@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Positional Encoding Animation</title>
+  <style>
+    body { text-align: center; font-family: monospace; background-color: #fafafa; }
+    canvas { border: 1px solid #ccc; background: #f5f5f5; margin: 20px auto; display: block; }
+  </style>
+</head>
+<body>
+  <!-- The canvas below will host both the horizontal 4-bit counter and the vertical streams -->
+  <canvas id="canvas" width="600" height="400"></canvas>
+  <script>
+    (function(){
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Reserve the top for the horizontal binary counter.
+      const topMargin = 50;
+      const columnAreaHeight = height - topMargin;
+      const numColumns = 4;
+      const columnWidth = width / numColumns;
+
+      // Define a base tick period T (in milliseconds)
+      const T = 1000;
+      // In binary counting the LSB (bit index 0) toggles every T.
+      // Hence, the discrete periods for the bit positions (read MSB to LSB)
+      // are:
+      //   MSB (bit index 3) : period 8T,
+      //   Next (bit index 2)  : period 4T,
+      //   Next (bit index 1)  : period 2T,
+      //   LSB (bit index 0)   : period T.
+      // We assign these periods to the four columns (leftmost = MSB)
+      const periods = [8000, 4000, 2000, 1000];
+
+      // For the vertical stream animation in each column:
+      const cycleHeight = 50;    // vertical distance that equals one full cycle of the digit pattern
+      const amplitude = 20;      // horizontal amplitude for the illustrative sine path
+      const lineSpacing = 20;    // vertical spacing between successive digits in the stream
+
+      let startTime = null;
+
+      function draw(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+
+        // Clear the entire canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // ===== 1. Draw the horizontal binary counter at the top =====
+        // Update discrete counter (each tick is T ms)
+        const counter = Math.floor(elapsed / T) % 16;
+        let counterStr = counter.toString(2).padStart(4, '0');
+        ctx.font = '40px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'black';
+        ctx.fillText(counterStr, width / 2, 40);
+
+        // ===== 2. Draw vertical streams & illustrative sine waves for each digit =====
+        // The columns are drawn left to right; the leftmost corresponds to the most significant bit.
+        for (let col = 0; col < numColumns; col++) {
+          // Column center x coordinate
+          const colCenter = col * columnWidth + columnWidth / 2;
+          // Map column to the corresponding bit index (leftmost = MSB, i.e. bit index 3)
+          const bitIndex = 3 - col;
+          const period = periods[col];  // period in ms for this bit
+          // Compute a vertical offset so that the repeating stream cycles upward.
+          // Over one period, the pattern shifts upward by one full cycleHeight.
+          const offset = (elapsed % period) / period * cycleHeight;
+
+          // Draw a vertical column of digits to create the flowing stream.
+          // We start a little above the drawing area so that the pattern appears continuous.
+          let startY = topMargin - cycleHeight;
+          for (let y = startY; y < height; y += lineSpacing) {
+            // Compute phase based on vertical position in the stream plus the time-varying offset.
+            // We use cos(⋅ + π) so that at offset zero the digit is 0 (cos(π) = -1).
+            const phase = 2 * Math.PI * ((y - topMargin + offset) / cycleHeight) + Math.PI;
+            const digit = Math.cos(phase) >= 0 ? '1' : '0';
+            ctx.fillStyle = 'gray';
+            ctx.font = '16px monospace';
+            ctx.fillText(digit, colCenter, y);
+          }
+
+          // Draw a horizontal sample marker (light blue line) in this column’s area.
+          const sampleY = topMargin + columnAreaHeight / 2;
+          ctx.beginPath();
+          ctx.moveTo(col * columnWidth, sampleY);
+          ctx.lineTo((col + 1) * columnWidth, sampleY);
+          ctx.strokeStyle = 'lightblue';
+          ctx.stroke();
+
+          // Compute the digit at the sample line in the stream (using the same phase function)
+          const samplePhase = 2 * Math.PI * ((sampleY - topMargin + offset) / cycleHeight) + Math.PI;
+          const sampleDigit = Math.cos(samplePhase) >= 0 ? '1' : '0';
+
+          // Get the discrete bit from the binary counter for comparison
+          const discreteBit = (counter >> bitIndex) & 1;
+
+          // Draw the sample digit in a larger red font at the marker position.
+          ctx.font = '32px monospace';
+          ctx.fillStyle = 'red';
+          ctx.fillText(sampleDigit, colCenter, sampleY);
+
+          // Optionally, show (in black) the discrete value below the stream digit for comparison.
+          ctx.font = '16px monospace';
+          ctx.fillStyle = 'black';
+          ctx.fillText('(' + discreteBit + ')', colCenter, sampleY + 30);
+
+          // For additional illustration, draw the continuous sine-wave path
+          // This path shows how the stream “wiggles” horizontally.
+          ctx.beginPath();
+          for (let y = topMargin; y < height; y += 5) {
+            let phase = 2 * Math.PI * ((y - topMargin + offset) / cycleHeight) + Math.PI;
+            // The horizontal displacement from the column center is given by a sine function.
+            const dx = amplitude * Math.sin(phase);
+            const x = colCenter + dx;
+            if (y === topMargin) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          ctx.strokeStyle = 'blue';
+          ctx.stroke();
+
+          // Label the column with its associated period (and bit position)
+          ctx.font = '14px sans-serif';
+          let label = '';
+          switch (col) {
+            case 0: label = '8T (MSB)'; break;
+            case 1: label = '4T'; break;
+            case 2: label = '2T'; break;
+            case 3: label = 'T (LSB)'; break;
+          }
+          ctx.fillStyle = 'black';
+          ctx.fillText(label, colCenter, height - 10);
+        }
+
+        // Request the next frame.
+        requestAnimationFrame(draw);
+      }
+
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>

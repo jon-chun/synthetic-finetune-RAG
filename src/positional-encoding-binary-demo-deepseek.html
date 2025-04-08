@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .counter {
+            display: flex;
+            gap: 20px;
+            font-size: 32px;
+            margin-bottom: 40px;
+        }
+
+        .bit {
+            width: 30px;
+            text-align: center;
+            transition: color 0.3s;
+        }
+
+        .waves {
+            display: flex;
+            gap: 20px;
+            height: 100px;
+        }
+
+        .wave-container {
+            width: 30px;
+            height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .wave {
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0%,
+                transparent 50%,
+                #2196f3 50%,
+                #2196f3 100%
+            );
+            background-size: 100% 200px;
+            opacity: 0.7;
+        }
+
+        @keyframes waveScroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .active {
+            color: #2196f3;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="counter">
+            <div class="bit">0</div>
+            <div class="bit">0</div>
+            <div class="bit">0</div>
+            <div class="bit">0</div>
+        </div>
+        <div class="waves">
+            <div class="wave-container"><div class="wave"></div></div>
+            <div class="wave-container"><div class="wave"></div></div>
+            <div class="wave-container"><div class="wave"></div></div>
+            <div class="wave-container"><div class="wave"></div></div>
+        </div>
+    </div>
+
+    <script>
+        const T = 1000; // Base period in ms
+        let count = 0;
+        const bits = document.querySelectorAll('.bit');
+        const waves = document.querySelectorAll('.wave');
+        const waveContainers = document.querySelectorAll('.wave-container');
+
+        // Set up wave animations
+        waves.forEach((wave, index) => {
+            const period = T * Math.pow(2, 3 - index);
+            wave.style.animation = `waveScroll ${period}ms linear infinite`;
+        });
+
+        // Update counter and bit states
+        function updateCounter() {
+            count = (count + 1) % 16;
+            
+            bits.forEach((bit, index) => {
+                const bitValue = (count >> (3 - index)) & 1;
+                bit.textContent = bitValue;
+                bit.classList.toggle('active', bitValue === 1);
+            });
+        }
+
+        // Start animation
+        setInterval(updateCounter, T);
+    </script>
+</body>
+</html>

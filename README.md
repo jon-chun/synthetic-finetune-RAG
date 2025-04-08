@@ -81,6 +81,7 @@ Follow these steps to complete the project:
 
 ## REFERENCES
 
+* [(Blog) Fine-tune ModernBERT for RAG with Synthetic Data (20 Jan 2025) by Han-Diaz et al. ](https://huggingface.co/blog/sdiazlor/fine-tune-modernbert-for-rag-with-synthetic-data)
 * [Fine-tune ModernBERT with Synthetic Data for RAG](https://github.com/argilla-io/synthetic-data-generator/blob/main/examples/fine-tune-modernbert-rag.ipynb)
 * [How to Fine-tune ModernBERT for Classification (5:38) (3 Jan 2025) ](https://www.youtube.com/watch?v=7-js_--plHE)
 * [Does Fine Tuning Embedding Models Improve RAG? (26:03) (12 Sep 2024)](https://www.youtube.com/watch?v=hztWQcoUbt0)
