@@ -8,9 +8,8 @@
 
 ---
 
-
 ![GenAI The Garden of Digital Vectors by AI Hieronymus Bosch](./docs/garden-of-digital-vectors_hieronymus-bosch.png?raw=true)
-The Garden of Digital Vectors: A surreal landscape inspired by Hieronymus Bosch where embedding vectors grow like crystalline trees, tended by AI gardeners in Renaissance attire, with knowledge fragments floating as translucent fruits, and a central fountain where synthetic and organic data streams merge.
+*The Garden of Digital Vectors: A surreal landscape inspired by Hieronymus Bosch where embedding vectors grow like crystalline trees, tended by AI gardeners in Renaissance attire, with knowledge fragments floating as translucent fruits, and a central fountain where synthetic and organic data streams merge.*
 
 ## OVERVIEW
 
